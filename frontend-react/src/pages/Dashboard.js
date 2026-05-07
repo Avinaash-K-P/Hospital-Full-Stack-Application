@@ -70,7 +70,7 @@ useEffect(() => {
       setDoctorId("");
       setPatientId("");
     } catch (err) {
-      alert(" Booking failed.");
+      alert("❌ Booking failed.");
     } finally {
       setBooking(false);
     }

@@ -6,7 +6,6 @@ class AppointmentCreate(BaseModel):
     doctor_id: int
     patient_id: int
     appointment_date: datetime
-    status: str = "Scheduled"
 
 class AppointmentUpdate(BaseModel):
     status: Optional[str] = None

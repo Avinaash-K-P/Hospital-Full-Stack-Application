@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import asc, desc
 from app.models.patient import Patient
 from app.schemas.patient import PatientCreate, PatientUpdate
+from app.utils.pagination import paginator
 
 # 1. Add Patient
 def create_patient(db: Session, patient: PatientCreate):
@@ -10,12 +12,29 @@ def create_patient(db: Session, patient: PatientCreate):
     db.refresh(db_patient)
     return db_patient
 
-# 2. Search by name or phone
-def search_patient(db: Session, query: str):
-    return db.query(Patient).filter(
-        (Patient.name.ilike(f"%{query}%")) |
-        (Patient.phone.ilike(f"%{query}%"))
-    ).all()
+#2. List Patient
+def list_patient(db: Session, skip: int = 0,limit: int = 10, sort_by: str = id, order = "asc"):
+    query = db.query(Patient)
+    sort_column = getattr(Patient, sort_by, None)
+    if sort_column:
+        if order == "desc":
+            query = query.order_by(desc(sort_column))
+        else:
+            query = query.order_by(asc(sort_column))
+    return paginator(query,skip,limit)
+
+# Search by name or phone
+def search_patient(
+        db: Session, 
+        name:str=None,
+        phone:str=None
+        ):   
+    query = db.query(Patient)
+    if name:
+        query = query.filter(Patient.name.ilike(f"%{name}%"))
+    if phone:
+        query = query.filter(Patient.phone.ilike(f"%{phone}%"))     
+    return query.all()
 
 # 3. Update Patient
 def update_patient(db: Session, patient_id: int, patient: PatientUpdate):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Enum, Integer, DateTime, ForeignKey
 from datetime import datetime
 from app.db.base import Base
 
@@ -9,4 +9,7 @@ class Appointment(Base):
     doctor_id = Column(Integer, ForeignKey("doctors.id"))
     patient_id = Column(Integer, ForeignKey("patients.id"))
     appointment_date = Column(DateTime, default=datetime.utcnow)
-    status = Column(String(20), default="Scheduled")
+    status = Column( 
+        Enum("pending", "approved", "rejected", "completed"), 
+        default="pending", nullable=False
+        )
